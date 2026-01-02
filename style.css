@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    background: #0e0e0e;
+    color: #eaeaea;
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 80px auto;
+    padding: 0 24px;
+}
+
+h1 {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.meta {
+    color: #9a9a9a;
+    font-size: 0.9rem;
+}
+
+a {
+    color: #bdbdbd;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #ffffff;
+}
+
+.section {
+    opacity: 0;
+    animation: fadeUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
