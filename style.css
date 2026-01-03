@@ -6,27 +6,19 @@ body {
     line-height: 1.6;
 }
 
-.container {
-    max-width: 900px;
-    margin: 80px auto;
-    padding: 0 24px;
-}
 .container img {
     display: block;
     margin: 40px auto 10px auto; 
     max-width: 100%;
-    height: auto;
-    border: 1px solid #333;
-    border-radius: 4px;
 }
-
-
-.container img + em {
-    display: block;
-    text-align: center;
+.container img + em,
+.container img ~ em {
+    display: block;    
+    text-align: center; 
+    margin: 0 auto 40px auto; 
     color: #9a9a9a;
     font-size: 0.9rem;
-    margin-bottom: 40px;
+    font-style: italic;
 }
 
 
@@ -78,11 +70,13 @@ code {
 }
 
 
-.highlight .k { color: #569cd6; } 
-.highlight .s { color: #ce9178; } 
-.highlight .c { color: #6a9955; } 
-.highlight .n { color: #dcdcaa; } 
-
+.highlight .k, .highlight .kt, .highlight .kd { color: #569cd6 !important; } 
+.highlight .s, .highlight .s2, .highlight .se { color: #ce9178 !important; }
+.highlight .c, .highlight .c1 { color: #6a9955 !important; font-style: italic; }
+.highlight .nf, .highlight .fm { color: #dcdcaa !important; }                
+.highlight .mi, .highlight .mh, .highlight .m { color: #b5cea8 !important; }  
+.highlight .p { color: #d4d4d4 !important; }                                 
+.highlight .nc, .highlight .nn { color: #4ec9b0 !important; }
 
 h1, h2, h3 {
     font-weight: 600;
