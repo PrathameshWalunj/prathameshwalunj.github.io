@@ -48,7 +48,7 @@ The Import Table is minimal, which is typical for managed assemblies. The most n
 This function is responsible for initializing the Common Language Runtime (CLR) and transferring execution to the managed .NET entry point.
 
 ![Import table view from PE-bear highlighting CLR initialization](./images/PebearImportlist.png)
-> *Figure 1: Import table view from PE-bear highlighting CLR initialization.*
+*Figure 1: Import table view from PE-bear highlighting CLR initialization.*
 
 ---
 
@@ -264,7 +264,7 @@ Captured entries included commands executed in Command Prompt, navigation within
 *Figure 7: Encrypted keystroke log artifacts located in the AppData directory.*
 
 ### Decrypted Keystroke Log Excerpt
-```
+```text
  ø8Xi#[dnSpy] dnSpy v6.1.8 (32-bit, .NET)t.[dnSpy] dnSpy v6.1.8 (32-bit, .NET, Debugging)tttttttttttttttt[SearchApp] Searchprocessjahackersystem informer
 
  Q9Xi#[dnSpy] dnSpy v6.1.8 (32-bit, .NET)>reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run"[cmd] Command Promptcls
