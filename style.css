@@ -46,3 +46,41 @@ a:hover {
         transform: translateY(0);
     }
 }
+
+pre {
+    background: #1a1a1a;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid #333;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+    color: #f8f8f2;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.95rem;
+}
+
+th {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid #333;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #222;
+}
+
+tr:hover {
+    background-color: #151515;
+}
