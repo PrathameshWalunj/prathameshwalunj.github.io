@@ -1,6 +1,7 @@
 ---
 layout: default
-title: Analysis of NanoCore RAT — Living off the Windows API
+title: Analysis of NanoCore RAT - P/Invoke and Win32 Interop
+permalink: /blog/nanocore/
 ---
 
 # Analysis of a NanoCore RAT Variant: P/Invoke and Win32 Interop
@@ -19,11 +20,11 @@ Rather than surveying NanoCore functionality at a high level, this write-up conc
 
 ## Tools Used
 
-- **PE-bear** — Initial triage and PE header inspection  
+- **PE-bear** - Initial triage and PE header inspection  
 
-- **dnSpy** — Used for decompilation, static analysis, and dynamic debugging. Breakpoints were set on entry points and core decryption routines to observe the malware’s runtime state in memory.
+- **dnSpy** - Used for decompilation, static analysis, and dynamic debugging. Breakpoints were set on entry points and core decryption routines to observe the malware’s runtime state in memory.
 
-- **Process Monitor (Procmon)** — Runtime behavior tracing and artifact correlation to identify file system and registry interactions.
+- **Process Monitor (Procmon)** - Runtime behavior tracing and artifact correlation to identify file system and registry interactions.
 
 ## Sample Metadata
 
@@ -151,7 +152,7 @@ This technique effectively discourages termination by coupling malware removal w
 
 ### Registry Persistence (`SetRunKeyPersistence`)
 
-Persistence is established through a registry-based mechanism. The malware copies itself to a configured location within the user profile—observed during dynamic analysis as `AppData\Roaming\dft-ddsf--\`—and registers an autorun entry under the following key:
+Persistence is established through a registry-based mechanism. The malware copies itself to a configured location within the user profile—observed during dynamic analysis as `AppData\Roaming\dft-ddsf--\` and registers an autorun entry under the following key:
 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`
 
 This approach avoids the need for administrative privileges and ensures execution upon each user login. The use of per-user persistence combined with non-descriptive directory naming allows the malware to survive reboots and basic cleanup attempts without triggering User Account Control (UAC).
@@ -177,8 +178,8 @@ The loader initializes the COM library and invokes `OleGetClipboard`, retrieving
 
 This approach provides greater flexibility than traditional clipboard scraping. Instead of extracting a single text buffer, the malware can query the clipboard for multiple registered data formats, including:
 
-- **`CF_UNICODETEXT`** — Used to capture copied passwords and sensitive strings  
-- **`CF_HDROP`** — Used to identify files copied via File Explorer, enabling potential file exfiltration  
+- **`CF_UNICODETEXT`** - Used to capture copied passwords and sensitive strings  
+- **`CF_HDROP`** - Used to identify files copied via File Explorer, enabling potential file exfiltration  
 
 By operating on the `IDataObject` interface, the RAT gains access to structured clipboard contents rather than raw strings alone.
 
@@ -399,8 +400,8 @@ This memory-backed section functions as a covert inter-process communication (IP
 
 This mechanism enables the RAT to:
 
-- **Transfer captured data** — such as keystrokes or clipboard contents — between processes without writing intermediate files to the NTFS volume.
-- **Share runtime state** — allowing injected modules or plugins to synchronize execution through shared memory.
+- **Transfer captured data** - such as keystrokes or clipboard contents between processes without writing intermediate files to the NTFS volume.
+- **Share runtime state** - allowing injected modules or plugins to synchronize execution through shared memory.
 
 ---
 
@@ -466,7 +467,7 @@ public static extern IntPtr CallNextHookEx(
 ## Conclusion
 Analysis of this NanoCore variant reveals a deliberately engineered interoperability layer that bridges managed .NET code with native Windows subsystems. Rather than relying on a single capability, the malware assembles a surveillance pipeline by operating across multiple abstraction layers of the operating system.
 
-The techniques observed emphasize reliability, coverage, and stealth over overt exploitation. By integrating with standard Windows mechanisms—clipboard handling, input dispatch, graphics rendering, and shared memory—the RAT is able to observe user activity while minimizing disruption and forensic artifacts.
+The techniques observed emphasize reliability, coverage, and stealth over overt exploitation. By integrating with standard Windows mechanisms such as clipboard handling, input dispatch, graphics rendering, and shared memory the RAT is able to observe user activity while minimizing disruption and forensic artifacts.
 
 The following table summarizes the primary behavioral techniques identified during analysis:
 
@@ -477,7 +478,7 @@ The following table summarizes the primary behavioral techniques identified duri
 | GDI Screen Capture | `BitBlt` | Captures desktop pixel data for visual monitoring |
 | Fileless IPC | `CreateFileMapping` | Enables shared memory communication without disk artifacts |
 
-This analysis highlights the continued effectiveness of living-off-the-library techniques, where native Windows components are repurposed to support surveillance while avoiding obvious indicators.
+This analysis highlights the continued effectiveness of living-off-the-land techniques, where native Windows components are repurposed to support surveillance while avoiding obvious indicators.
 
 Further analysis will examine persistence and obfuscation techniques in a macOS-based spyware sample.
 

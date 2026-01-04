@@ -1,12 +1,10 @@
 title: Prathamesh Walunj | Malware Analysis
 description: Reverse Engineering and Security Research
-baseurl: "" 
-url: "https://prathameshwalunj.github.io" 
+baseurl: ""
+url: "https://prathameshwalunj.github.io"
 
 markdown: kramdown
 highlighter: rouge
 
 kramdown:
-  input: GFM 
-  syntax_highlighter_opts:
-    block_header: true
+  input: GFM
