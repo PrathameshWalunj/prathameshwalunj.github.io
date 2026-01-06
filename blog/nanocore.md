@@ -490,7 +490,7 @@ window.glossaryTerms = {
 
 "13": "WH_KEYBOARD_LL. A low-level keyboard hook that intercepts keyboard input events in user mode before they are dispatched to target applications. Because the hook callback executes in the malware’s own process, it enables global keystroke observation without injecting code into every process.",
 
-"-1": "INVALID_HANDLE_VALUE. When passed to CreateFileMapping, it instructs Windows to create a paging-file–backed memory section instead of mapping an on-disk file. This allows malware to store data or code entirely in RAM, avoiding persistent filesystem artifacts.",
+"-1": "INVALID_HANDLE_VALUE. When passed to CreateFileMapping, it instructs Windows to create a paging-file-backed memory section instead of mapping an on-disk file. This allows malware to store data or code entirely in RAM, avoiding persistent filesystem artifacts.",
 
 "0x40": "PAGE_EXECUTE_READWRITE. A memory protection flag that marks a region as writable and executable. This defeats DEP-style protections, allowing shellcode or dynamically generated code to be written into memory and executed directly.",
 

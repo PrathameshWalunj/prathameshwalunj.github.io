@@ -110,14 +110,15 @@ table {
 }
 
 th {
-    background-color: #1a1a2e;
-    color: #00ff41;
+    background-color: #0f0f14;
+    color: #ffffff;
     text-align: left;
     padding: 14px 16px;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
+    border-bottom: 2px solid #222;
 }
 
 td {
@@ -154,11 +155,12 @@ code {
 
 /* Inline code */
 p code, li code, td code {
-    background: #1a1a2e;
+    background: #0f0f14;
     padding: 3px 7px;
     border-radius: 4px;
     font-size: 0.85em;
-    color: #00ff41;
+    color: #ffffff;
+    border: 1px solid #222
 }
 
 /* Syntax highlighting */
@@ -185,10 +187,11 @@ li {
 blockquote {
     margin: 1.5em 0;
     padding: 1em 1.5em;
-    border-left: 3px solid #00ff41;
+    border-left: 3px solid #444;
     background: #0f0f14;
     border-radius: 0 8px 8px 0;
-    color: #aaa;
+    color: #ccc;
+    font-style: italic;
 }
 
 blockquote p {
@@ -291,6 +294,25 @@ hr {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+@media (hover: none) {
+    .glossary-term {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@media (hover: none) {
+    #glossary-tooltip {
+        position: fixed;
+        left: 16px !important;
+        right: 16px;
+        bottom: 16px;
+        top: auto !important;
+        max-width: calc(100vw - 32px);
+    }
+}
+
 
 /* Responsive */
 @media (max-width: 600px) {
