@@ -4,7 +4,7 @@ title: Analysis of NanoCore RAT - P/Invoke and Win32 Interop
 permalink: /blog/nanocore/
 ---
 
-# Analysis of a NanoCore RAT Variant: P/Invoke and Win32 Interop
+# Analysis of a NanoCore RAT Variant: <span class="glossary-term">P/Invoke</span> and Win32 Interop
 
 **TL;DR**
 - NanoCore RAT variant targeting Windows 10 (.NET)
@@ -44,7 +44,7 @@ This framework choice is common among RAT authors, as it maintains compatibility
 
 The Import Table is minimal, which is typical for managed assemblies. The most notable import is:
 
-- **`_CorExeMain` (mscoree.dll)**
+- **`_CorExeMain` (<span class="glossary-term">mscoree.dll</span>)**
 
 This function is responsible for initializing the Common Language Runtime (CLR) and transferring execution to the managed .NET entry point.
 
@@ -96,10 +96,10 @@ These renames allowed the execution path to be followed without repeatedly resol
 The method renamed to `DecryptCore` (originally `#=q8uMGC...`) functions as the primary bootstrap routine.
 
 **Technique.**  
-The routine leverages the `Rfc2898DeriveBytes` class to implement a password-based key derivation function (PBKDF2).
+The routine leverages the `<span class="glossary-term">Rfc2898DeriveBytes</span>` class to implement a password-based key derivation function (PBKDF2).
 
 **Environmental Keying.**  
-To frustrate automated sandboxing, the malware derives its decryption salt from the assembly’s own GUID attribute. This introduces a dependency on intact file metadata—alteration or repackaging can cause decryption to fail.
+To frustrate automated sandboxing, the malware derives its decryption salt from the assembly’s own GUID attribute. This introduces a dependency on intact file metadata-alteration or repackaging can cause decryption to fail.
 
 **Algorithm.**  
 The derived key and IV are passed into a `RijndaelManaged` (AES) instance, which decrypts the final payload directly into memory.
@@ -139,9 +139,9 @@ This behavior also allows defenders or analysts to preemptively block execution 
 
 ### Process Protection (`ProtectProcess`)
 
-The method responsible for process protection attempts to harden the malware against userland interference. Execution begins by invoking `Process.EnterDebugMode()`, which requests the `SeDebugPrivilege`. This privilege allows the process to inspect and interact with other processes on the system, including those owned by the SYSTEM account.
+The method responsible for process protection attempts to harden the malware against userland interference. Execution begins by invoking `Process.EnterDebugMode()`, which requests the `<span class="glossary-term">SeDebugPrivilege</span>`. This privilege allows the process to inspect and interact with other processes on the system, including those owned by the SYSTEM account.
 
-Following privilege escalation, the routine issues a native call via an obfuscated wrapper into `ntdll`, passing a process information class value of `29`. This value corresponds to `ProcessBreakOnTermination`, a flag that alters how the operating system responds to process termination.
+Following privilege escalation, the routine issues a native call via an obfuscated wrapper into `ntdll`, passing a process information class value of `<span class="glossary-term">29</span>`. This value corresponds to `ProcessBreakOnTermination`, a flag that alters how the operating system responds to process termination.
 
 When set, this flag may cause Windows to treat the process as critical, such that terminating it can trigger a system bugcheck (BSOD) on certain Windows versions and configurations. While not universally enforced, this behavior introduces significant friction for analysts and defenders attempting to kill the process using standard utilities.
 
@@ -152,7 +152,7 @@ This technique effectively discourages termination by coupling malware removal w
 
 ### Registry Persistence (`SetRunKeyPersistence`)
 
-Persistence is established through a registry-based mechanism. The malware copies itself to a configured location within the user profile—observed during dynamic analysis as `AppData\Roaming\dft-ddsf--\` and registers an autorun entry under the following key:
+Persistence is established through a registry-based mechanism. The malware copies itself to a configured location within the user profile observed during dynamic analysis as `AppData\Roaming\dft-ddsf--\` and registers an autorun entry under the following key:
 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`
 
 This approach avoids the need for administrative privileges and ensures execution upon each user login. The use of per-user persistence combined with non-descriptive directory naming allows the malware to survive reboots and basic cleanup attempts without triggering User Account Control (UAC).
@@ -174,22 +174,22 @@ Rather than polling high-level User32 APIs, the malware treats the clipboard as 
 
 ### Technical Analysis
 
-The loader initializes the COM library and invokes `OleGetClipboard`, retrieving a pointer to an `IDataObject` interface representing the current clipboard contents.
+The loader initializes the COM library and invokes `OleGetClipboard`, retrieving a pointer to an `<span class="glossary-term">IDataObject</span>` interface representing the current clipboard contents.
 
 This approach provides greater flexibility than traditional clipboard scraping. Instead of extracting a single text buffer, the malware can query the clipboard for multiple registered data formats, including:
 
 - **`CF_UNICODETEXT`** - Used to capture copied passwords and sensitive strings  
 - **`CF_HDROP`** - Used to identify files copied via File Explorer, enabling potential file exfiltration  
 
-By operating on the `IDataObject` interface, the RAT gains access to structured clipboard contents rather than raw strings alone.
+By operating on the `<span class="glossary-term">IDataObject</span>` interface, the RAT gains access to structured clipboard contents rather than raw strings alone.
 
 ---
 
 ### Persistence via Clipboard Flushing
 
-A notable aspect of this implementation is the use of `OleFlushClipboard`.
+A notable aspect of this implementation is the use of `<span class="glossary-term">OleFlushClipboard</span>`.
 
-Under normal circumstances, clipboard data owned by an application is released when that application exits. By calling `OleFlushClipboard`, the malware forces Windows to render and persist the clipboard contents into a global memory object.
+Under normal circumstances, clipboard data owned by an application is released when that application exits. By calling `<span class="glossary-term">OleFlushClipboard</span>`, the malware forces Windows to render and persist the clipboard contents into a global memory object.
 
 This behavior ensures that captured data remains accessible even if the originating application such as a password manager terminates or attempts to clear the clipboard. The flushed data can then be harvested asynchronously and written to the malware’s internal log files.
 
@@ -223,7 +223,7 @@ This module functions as a primary surveillance mechanism by installing a global
 
 The malware installs the hook using the `SetWindowsHookEx` API. While this function is commonly used for accessibility or UI-related features, the implementation detail of interest is the `idHook` parameter.
 
-In this case, the value passed is `13`, corresponding to `WH_KEYBOARD_LL` (low-level keyboard hook).
+In this case, the value passed is `<span class="glossary-term">13</span>`, corresponding to `WH_KEYBOARD_LL` (low-level keyboard hook).
 
 Unlike thread-specific hooks, `WH_KEYBOARD_LL` receives keyboard input events before they are dispatched to the target application. This allows the malware to intercept keystrokes globally, independent of which window or process currently has focus.
 
@@ -337,7 +337,7 @@ C:\Users\prath\Desktop\malware\ff66be4a8df7bd09427a53d2983e693489fbe494edd024405
 "8:31:24.8480436 PM","nanocore_sample.bin","9456","ReadFile","C:\Windows\Microsoft.NET\Framework\v2.0.50727\mscorwks.dll","SUCCESS","Offset: 6,176,768, Length: 16,384, I/O Flags: Non-cached, Paging I/O, Synchronous Paging I/O, Priority: Normal"
 ```
 
-### 3. GDI-Based Screen Capture (`BitBlt`)
+### 3. GDI-Based Screen Capture (`<span class="glossary-term">BitBlt</span>`)
 
 This component implements visual surveillance by capturing the contents of the user’s desktop using the Windows Graphics Device Interface (GDI). Rather than interacting with higher-level screen capture APIs, the malware operates directly on device contexts to extract pixel data without visible artifacts.
 
@@ -349,7 +349,7 @@ Screen capture is performed by treating the display as a device-backed drawing s
 
 A compatible bitmap is allocated and selected into this memory context, providing a destination buffer for pixel data.
 
-The transfer itself is performed using the `BitBlt` (Bit Block Transfer) API. The malware specifies the raster operation value `SRCCOPY` (`0x00CC0020`), instructing Windows to perform a direct, bit-for-bit copy of pixel data from the screen’s device context into the hidden memory buffer.
+The transfer itself is performed using the `<span class="glossary-term">BitBlt</span>` (Bit Block Transfer) API. The malware specifies the raster operation value `SRCCOPY` (`<span class="glossary-term>0x00CC0020</span>`), instructing Windows to perform a direct, bit-for-bit copy of pixel data from the screen’s device context into the hidden memory buffer.
 
 By repeatedly invoking this sequence in a timed loop, the malware is able to capture successive snapshots of the desktop. When performed at short intervals, this approach allows the attacker to reconstruct user activity visually without relying on explicit screen recording APIs.
 
@@ -386,7 +386,7 @@ This section documents one of the more subtle evasion techniques observed in the
 
 ### Technical Analysis
 
-The malware creates a named memory section using the `CreateFileMapping` API, passing a file handle value of `-1` (`INVALID_HANDLE_VALUE`).
+The malware creates a named memory section using the `CreateFileMapping` API, passing a file handle value of `<span class="glossary-term">-1</span>` (`INVALID_HANDLE_VALUE`).
 
 In the Windows API, specifying `INVALID_HANDLE_VALUE` instructs the operating system to back the mapping with the system paging file instead of an on-disk file. The result is a memory-backed section object that exists entirely in RAM and has no persistent representation on the filesystem.
 
@@ -407,7 +407,7 @@ This mechanism enables the RAT to:
 
 ### Executable Memory Mapping
 
-In addition to data exchange, the mapping is created with permissive memory protection flags. By specifying `PAGE_EXECUTE_READWRITE` (`0x40`), the malware creates a region that is writable and executable.
+In addition to data exchange, the mapping is created with permissive memory protection flags. By specifying `PAGE_EXECUTE_READWRITE` (`<span class="glossary-term">0x40</span>`), the malware creates a region that is writable and executable.
 
 This allows dynamically generated code stubs to be written directly into the shared section and executed by mapped processes, supporting fileless code execution without dropping additional binaries to disk.
 
@@ -482,4 +482,30 @@ This analysis highlights the continued effectiveness of living-off-the-land tech
 
 Further analysis will examine persistence and obfuscation techniques in a macOS-based spyware sample.
 
+<script>
+window.glossaryTerms = {
+"P/Invoke": "Platform Invocation Services. A mechanism that allows managed .NET code to call unmanaged Win32 APIs. Without P/Invoke, a .NET implant is constrained to the managed runtime; with it, malware can directly invoke native Windows APIs for memory manipulation, hooks, IPC, and system interaction.",
 
+"29": "ProcessBreakOnTermination. A process information class used with NtSetInformationProcess. When set, Windows may treat the process as critical, such that terminating it can trigger a system bugcheck (BSOD) on certain versions and configurations, discouraging manual termination.",
+
+"13": "WH_KEYBOARD_LL. A low-level keyboard hook that intercepts keyboard input events in user mode before they are dispatched to target applications. Because the hook callback executes in the malware’s own process, it enables global keystroke observation without injecting code into every process.",
+
+"-1": "INVALID_HANDLE_VALUE. When passed to CreateFileMapping, it instructs Windows to create a paging-file–backed memory section instead of mapping an on-disk file. This allows malware to store data or code entirely in RAM, avoiding persistent filesystem artifacts.",
+
+"0x40": "PAGE_EXECUTE_READWRITE. A memory protection flag that marks a region as writable and executable. This defeats DEP-style protections, allowing shellcode or dynamically generated code to be written into memory and executed directly.",
+
+"0x00CC0020": "SRCCOPY. A BitBlt raster operation code that performs a direct pixel copy from a source device context to a destination context. Commonly abused by malware for screen capture using GDI, blending into legitimate graphical operations.",
+
+"IDataObject": "A COM interface used by the Windows clipboard and drag-and-drop subsystem. It allows enumeration and extraction of multiple clipboard formats, enabling malware to access structured clipboard data such as text, file lists, and associated metadata rather than raw strings alone.",
+
+"OleFlushClipboard": "Forces the current clipboard owner to immediately render its data into a system-managed memory object. This allows clipboard contents to persist even after the source application exits, enabling delayed or asynchronous data harvesting.",
+
+"BitBlt": "A legacy GDI function for high-speed bitmap transfers. Malware frequently abuses it for screen capture because it is a legitimate and widely used API, allowing screenshot activity to blend in with normal graphical behavior.",
+
+"SeDebugPrivilege": "A powerful Windows privilege that allows a process to open, inspect, and manipulate other processes regardless of ownership. Malware abuses it to access protected processes such as LSASS or to interfere with security software.",
+
+"mscoree.dll": "The Microsoft Common Object Runtime Execution Engine. Responsible for bootstrapping the .NET Common Language Runtime (CLR). Its presence in a binary indicates managed code execution, even if the initial loader appears minimal or native.",
+
+"Rfc2898DeriveBytes": "A .NET implementation of PBKDF2, a password-based key derivation function. Malware uses it to derive encryption keys from secrets or system-specific values, enabling payloads that only decrypt correctly in the intended environment and resist offline analysis."
+};
+</script>

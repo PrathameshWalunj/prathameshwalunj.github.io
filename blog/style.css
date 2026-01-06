@@ -254,6 +254,39 @@ hr {
     animation: fadeUp 0.5s ease-out forwards;
 }
 
+.glossary-term {
+    color: #00ff41 !important;
+    border-bottom: 1px dashed #00ff41;
+    cursor: help;
+    font-weight: 500;
+}
+
+
+#glossary-tooltip {
+    position: absolute;
+    display: none;
+    background: #0f0f14;
+    color: #ccc;
+    padding: 14px;
+    border: 1px solid #00ff41;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    max-width: 300px;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    line-height: 1.5;
+    pointer-events: none; 
+}
+
+#glossary-tooltip strong {
+    color: #00ff41;
+    display: block;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 4px;
+}
+
+
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
