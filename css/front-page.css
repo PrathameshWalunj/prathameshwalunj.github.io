@@ -348,7 +348,7 @@ a.social:hover {
   position: fixed;
   bottom: 24px;
   left: 24px;
-  width: 260px;
+  width: 300px;
   opacity: 0.9;
   z-index: 20;
 }
@@ -374,4 +374,15 @@ a.social:hover {
   .tinygl-home {
     display: none;
   }
+}
+
+.tinygl-firefly {
+  left: auto;
+  right: 24px;
+  width: 300px;
+  opacity: 0.8;
+}
+
+.tinygl-spacer {
+  visibility: hidden;
 }
