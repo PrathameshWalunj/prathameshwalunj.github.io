@@ -343,3 +343,35 @@ a.social:hover {
         height: 140px;
     }
 }
+
+.tinygl-home {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 260px;
+  opacity: 0.9;
+  z-index: 20;
+}
+
+.tinygl-home video {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+
+.tinygl-caption {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #b8b8b8;
+  line-height: 1.3;
+}
+
+.tinygl-caption span {
+  color: #8a8a8a;
+}
+
+@media (max-width: 768px) {
+  .tinygl-home {
+    display: none;
+  }
+}
