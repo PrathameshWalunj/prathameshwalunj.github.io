@@ -624,6 +624,6 @@ window.glossaryTerms = {
 
 "Universal Binary": "Fat binary containing code for multiple CPU architectures (x86_64 + ARM64). Allows single app to run on Intel and Apple Silicon Macs.",
 
-"universal binary": "A single executable file that contains code for both Intel-based and Apple Silicon-based Mac computers."
+"universal binary": "A single executable file that contains code for both Intel based and Apple Silicon based Mac computers."
 };
 </script>
