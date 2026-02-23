@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0a;
+            color: #ccc;
+            font-family: monospace;
+            padding: 24px;
+        }
+
+
+
+        .art {
+            max-width: 600px;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .quote {
+            max-width: 560px;
+            margin: 28px 0;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #999;
+            text-align: center;
+            font-style: italic;
+        }
+
+        a {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #888;
+            background: none;
+            border: 1px solid #222;
+            padding: 8px 18px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: color 0.15s, border-color 0.15s;
+            margin-top: 8px;
+        }
+
+        a:hover {
+            color: #00ff41;
+            border-color: #00ff41;
+        }
+    </style>
+</head>
+
+<body>
+    <img class="art" id="art" src="" alt="ASCII art cat" />
+    <p class="quote" id="quote"></p>
+    <a href="https://prathameshwalunj.dev">home</a>
+
+    <script>
+        const CATS = [
+            'cat02_ascii.jpg', 'cat03_ascii.jpg', 'cat06_ascii.jpg',
+            'cat12_ascii.jpg', 'cat15_ascii.jpg', 'cat16_ascii.jpg'
+        ];
+
+        const QUOTES = [
+            "404: Even my honeypot serves more convincing pages than whatever you were expecting here.",
+            "You've wandered straight into unallocated memory, and honestly, that's a bolder move than most people make all day.",
+            "This page doesn't exist, never existed, and your browser history is now your only witness.",
+            "Somewhere in the stack, something went wrong. I'm not saying it was you, but it definitely wasn't me.",
+            "Access denied - just kidding, there's genuinely nothing here. The denial is just for dramatic effect.",
+            "Congratulations, you found the void. For what it's worth, the void looked at you and shrugged.",
+            "Not all who wander are lost, but I've reviewed your request and you are profoundly, irreversibly lost.",
+            "You made a wrong turn so catastrophic that even Google Maps just threw up its hands and walked away.",
+            "This page ghosted you before ghosting was a cultural phenomenon. It was ahead of its time, really.",
+            "You didn't just break the internet,you broke this very specific, very small corner of it, and I noticed.",
+            "Close, but no flag. And in this game, close doesn't earn you partial credit or a consolation prize.",
+            "This page retired early, left no forwarding address, and is probably sipping something expensive on a beach somewhere.",
+            "Whatever you were looking for packed its bags and left about thirty seconds before you showed up.",
+            "Bold of you to assume this URL ever pointed to anything. That kind of optimism is either admirable or reckless.",
+            "The link that brought you here owes you a sincere apology and possibly dinner for wasting your time like this.",
+            "You ran a full scan, enumerated every directory, and ended up here — a page with no vulnerabilities because there's no page.",
+            "Reconnaissance complete. Target does not exist. Recommend redirecting efforts to a URL that actually resolves.",
+            "This is not the exploit you're looking for. There's nothing to overflow, nothing to inject, and nothing to see.",
+            "Connection established, handshake complete, but the content on the other end is null and the vibe is deeply questionable.",
+            "Your request has been logged, analyzed, and cross-referenced. Just kidding. But the fact that you hesitated says everything.",
+            "Null pointer exception. The page you wanted wasn't found in the heap, the stack, or anywhere in the emotional architecture of this server.",
+            "Welcome to the attack surface. Unfortunately, there's nothing here to attack, defend, or even acknowledge your presence.",
+            "Payload delivered successfully to a target that doesn't exist. Somewhere, a packet is having an existential crisis.",
+            "Even my malware sandbox, which exists solely to trap bad decisions, has more meaningful content than this page.",
+            "You scanned every port, knocked on every door, and found absolutely nothing which is honestly the most thorough way to be disappointed.",
+            "CVE not found. Page not found. Confidence not found. I'm starting to see a pattern here and it's not a good one.",
+            "This path is not injectable, not traversable, not accessible, and if we're being honest not even real in any meaningful sense.",
+            "You tried to pivot from one compromised position to another and landed in the digital equivalent of an empty parking lot. Respect.",
+            "No shell, no page, no reverse connection, no callback just you, this message, and the quiet hum of a server judging you.",
+            "You enumerated every directory, brute-forced every path, and arrived here with absolutely nothing to show for it. That takes a special kind of dedication."
+        ];
+
+        let lastCat = -1, lastQuote = -1;
+
+        function pick(arr, last) {
+            let i;
+            do { i = Math.floor(Math.random() * arr.length); } while (i === last && arr.length > 1);
+            return i;
+        }
+
+        function roll() {
+            lastCat = pick(CATS, lastCat);
+            lastQuote = pick(QUOTES, lastQuote);
+            document.getElementById('art').src = 'assets/cats-ascii/' + CATS[lastCat];
+            document.getElementById('quote').textContent = QUOTES[lastQuote];
+        }
+
+        roll();
+    </script>
+</body>
+
+</html>

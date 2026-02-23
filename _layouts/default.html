@@ -1,88 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title }} | Prathamesh Walunj</title>
-  <link rel="stylesheet" href="/blog/style.css">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="shortcut icon" href="/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }} | Prathamesh Walunj</title>
+    <link rel="stylesheet" href="/blog/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="shortcut icon" href="/favicon.ico">
 </head>
 <div id="glossary-tooltip"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const tooltip = document.getElementById('glossary-tooltip');
-    const terms = window.glossaryTerms || {};
+    document.addEventListener('DOMContentLoaded', () => {
+        const tooltip = document.getElementById('glossary-tooltip');
+        const terms = window.glossaryTerms || {};
 
-    const isTouchDevice =
-        'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const isTouchDevice =
+            'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    let activeEl = null;
+        let activeEl = null;
 
-    document.querySelectorAll('.glossary-term').forEach(el => {
-        const showTooltip = (x, y) => {
-            const termKey = el.getAttribute('data-term') || el.innerText.trim();
-            const definition = terms[termKey];
-            if (!definition) return;
+        document.querySelectorAll('.glossary-term').forEach(el => {
+            const showTooltip = (x, y) => {
+                const termKey = el.getAttribute('data-term') || el.innerText.trim();
+                const definition = terms[termKey];
+                if (!definition) return;
 
-            tooltip.innerHTML = `<strong>${termKey}</strong>${definition}`;
-            tooltip.style.display = 'block';
-            tooltip.style.left = (x + 12) + 'px';
-            tooltip.style.top = (y + 12) + 'px';
-            activeEl = el;
-        };
+                tooltip.innerHTML = `<strong>${termKey}</strong>${definition}`;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (x + 12) + 'px';
+                tooltip.style.top = (y + 12) + 'px';
+                activeEl = el;
+            };
 
-        const hideTooltip = () => {
-            tooltip.style.display = 'none';
-            activeEl = null;
-        };
+            const hideTooltip = () => {
+                tooltip.style.display = 'none';
+                activeEl = null;
+            };
+
+            if (isTouchDevice) {
+
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+
+                    const x = e.pageX || (e.clientX + window.scrollX);
+                    const y = e.pageY || (e.clientY + window.scrollY);
+
+                    if (activeEl === el) {
+                        hideTooltip();
+                    } else {
+                        showTooltip(x, y);
+                    }
+                });
+            } else {
+
+                el.addEventListener('mousemove', (e) => {
+                    showTooltip(e.pageX, e.pageY);
+                });
+
+                el.addEventListener('mouseleave', hideTooltip);
+            }
+        });
+
 
         if (isTouchDevice) {
-            
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-
-                const x = e.pageX || (e.clientX + window.scrollX);
-                const y = e.pageY || (e.clientY + window.scrollY);
-
-                if (activeEl === el) {
-                    hideTooltip();
-                } else {
-                    showTooltip(x, y);
-                }
+            document.addEventListener('click', () => {
+                tooltip.style.display = 'none';
+                activeEl = null;
             });
-        } else {
-            
-            el.addEventListener('mousemove', (e) => {
-                showTooltip(e.pageX, e.pageY);
-            });
-
-            el.addEventListener('mouseleave', hideTooltip);
         }
     });
-
-    
-    if (isTouchDevice) {
-        document.addEventListener('click', () => {
-            tooltip.style.display = 'none';
-            activeEl = null;
-        });
-    }
-});
 </script>
 
 <body>
 
-<div class="container section">
-  {{ content }}
+    <div class="container section">
+        {{ content }}
 
-  <p class="back-link">
-    <a href="/blog/">← Back to all analyses</a> · <a href="/">Home</a>
-  </p>
-</div>
+        <p class="back-link">
+            <a href="https://prathameshwalunj.dev">← Home</a>
+        </p>
+    </div>
 
 </body>
+
 </html>
